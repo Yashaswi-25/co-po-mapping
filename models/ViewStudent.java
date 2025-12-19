@@ -1,0 +1,219 @@
+package models;
+
+import java.sql.*;
+import  beans.*;
+import java.util.*;
+
+public class ViewStudent {
+
+	private String userid,course;
+	private String usernm;
+	private String emailid;
+	private String mobileno;
+	private String gender;
+	private String dob;
+	private String semester;
+	private String branch;
+	private String lastseen,sub,pref1,pref2,pref3;
+	
+	
+	
+	public String getSub() {
+		return sub;
+	}
+	public void setSub(String sub) {
+		this.sub = sub;
+	}
+	public String getPref1() {
+		return pref1;
+	}
+	public void setPref1(String pref1) {
+		this.pref1 = pref1;
+	}
+	public String getPref2() {
+		return pref2;
+	}
+	public void setPref2(String pref2) {
+		this.pref2 = pref2;
+	}
+	public String getPref3() {
+		return pref3;
+	}
+	public void setPref3(String pref3) {
+		this.pref3 = pref3;
+	}
+	public String getCourse() {
+		return course;
+	}
+	public void setCourse(String course) {
+		this.course = course;
+	}
+	public String getLastseen() {
+		return lastseen;
+	}
+	public void setLastseen(String lastseen) {
+		this.lastseen = lastseen;
+	}
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+	public String getDob() {
+		return dob;
+	}
+	public void setDob(String dob) {
+		this.dob = dob;
+	}
+	public String getSemester() {
+		return semester;
+	}
+	public void setSemester(String semester) {
+		this.semester = semester;
+	}
+	public String getBranch() {
+		return branch;
+	}
+	public void setBranch(String branch) {
+		this.branch = branch;
+	}
+	public String getUserid() {
+		return userid;
+	}
+	public void setUserid(String userid) {
+		this.userid = userid;
+	}
+	public String getUsernm() {
+		return usernm;
+	}
+	public void setUsernm(String usernm) {
+		this.usernm = usernm;
+	}
+	public String getEmailid() {
+		return emailid;
+	}
+	public void setEmailid(String emailid) {
+		this.emailid = emailid;
+	}
+	public String getMobileno() {
+		return mobileno;
+	}
+	public void setMobileno(String mobileno) {
+		this.mobileno = mobileno;
+	}
+	
+	public List<ViewStudent> getStudentReport(String br){
+		
+		GetConnection gc = new GetConnection();
+		Connection con;
+		List<ViewStudent> lst = new ArrayList<ViewStudent>();
+		
+		ResultSet rs;
+		
+		try {
+		
+		con= gc.getConnection();
+		Statement st=con.createStatement();
+		rs=st.executeQuery("select * from studentpersonal where branch='"+br+"' and usertype='student' or usertype='exstudent'");
+		ViewStudent vs;
+		LoginTracker login=new LoginTracker();
+		while(rs.next()) {
+			
+			vs= new ViewStudent();
+			vs.setUserid(rs.getString("userid"));
+			vs.setUsernm(rs.getString("usernm"));
+			vs.setEmailid(rs.getString("emailid"));
+			vs.setMobileno(rs.getString("mobileno"));
+			vs.setGender(rs.getString("gender"));
+			vs.setBranch(rs.getString("branch"));
+			vs.setCourse(rs.getString("course"));
+			vs.setDob(rs.getString("dob"));
+			vs.setSemester(rs.getString("semester"));
+			vs.setLastseen(login.getLastSeen(rs.getString("userid").toString().trim()));
+			lst.add(vs);
+		}
+		try {con.close();}catch(Exception ex) {}
+		}
+		catch(Exception ex){
+			ex.printStackTrace();
+		}
+		return(lst);
+	}
+public List<ViewStudent> getStudentReport2(String branch,String sem,String sub){
+		
+		GetConnection gc = new GetConnection();
+		Connection con;
+		List<ViewStudent> lst = new ArrayList<ViewStudent>();
+		
+		ResultSet rs;
+		
+		try {
+		
+		con= gc.getConnection();
+		Statement st=con.createStatement();
+		String qr="select s.*,st.subjectName,st.pref1,st.pref2,st.pref3 from studentpersonal s inner join stud_sub_allocation st on s.userid=st.userid and st.subjectName='"+sub.trim()+"' and s.branch='"+branch.trim()+"' and s.semester="+sem.trim();
+		System.out.println("qrr="+qr);
+		rs=st.executeQuery(qr);
+		ViewStudent vs;
+		//LoginTracker login=new LoginTracker();
+		while(rs.next()) {
+			
+			vs= new ViewStudent();
+			vs.setUserid(rs.getString("userid"));
+			vs.setUsernm(rs.getString("usernm"));
+			vs.setEmailid(rs.getString("emailid"));
+			vs.setMobileno(rs.getString("mobileno"));
+			vs.setGender(rs.getString("gender"));
+			vs.setBranch(rs.getString("branch"));
+			vs.setCourse(rs.getString("course"));
+			vs.setDob(rs.getString("dob"));
+			vs.setSemester(rs.getString("semester"));
+			vs.setSub(rs.getString("subjectName"));
+			vs.setPref1(rs.getString("pref1"));
+			vs.setPref2(rs.getString("pref2"));
+			vs.setPref3(rs.getString("pref3"));
+		//	vs.setLastseen(login.getLastSeen(rs.getString("userid").toString().trim()));
+			lst.add(vs);
+		}
+		try {con.close();}catch(Exception ex) {}
+		}
+		catch(Exception ex){
+			ex.printStackTrace();
+		}
+		return(lst);
+	}
+	public List<ViewStudent> getExStudentReport(){
+		
+		GetConnection gc = new GetConnection();
+		Connection con;
+		List<ViewStudent> lst = new ArrayList<ViewStudent>();
+		
+		ResultSet rs;
+		
+		try {
+		
+		con= gc.getConnection();
+		Statement st=con.createStatement();
+		rs=st.executeQuery("select * from studentpersonal where usertype='exstudent'");
+		ViewStudent vs;
+		LoginTracker login=new LoginTracker();
+		while(rs.next()) {
+			
+			vs= new ViewStudent();
+			vs.setUserid(rs.getString("userid"));
+			vs.setUsernm(rs.getString("usernm"));
+			vs.setEmailid(rs.getString("emailid"));
+			vs.setMobileno(rs.getString("mobileno"));
+			vs.setLastseen(login.getLastSeen(rs.getString("userid").toString().trim()));
+			lst.add(vs);
+		}
+		try {con.close();}catch(Exception ex) {}
+		}
+		catch(Exception ex){
+			ex.printStackTrace();
+		}
+		return(lst);
+	}
+	
+}
